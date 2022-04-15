@@ -47,14 +47,13 @@ function createEmployeeRecords(dataArrays) {
 function createTimeInEvent(dateStamp) {
     let hour = dateStamp.substring(11)
     let date = dateStamp.substring(0, 10)
-    let employeeRecord = []
     let timeInEventObj = {
         type: "TimeIn",
         hour: ~~hour,
         date: date
     }
-    employeeRecord["timeInEvents"].push(timeInEventObj)
-    return employeeRecord
+    this["timeInEvents"].push(timeInEventObj)
+    return this
 }
 
 function createTimeOutEvent(dateStamp) {
@@ -65,28 +64,30 @@ function createTimeOutEvent(dateStamp) {
         hour: ~~hour,
         date: date
     }
-    employeeRecord["timeOutEvents"].push(timeOutEventObj)
-    return employeeRecord
+    this["timeOutEvents"].push(timeOutEventObj)
+    return this
 }
 
 // Given an employee record with a date-matched timeInEvent and timeOutEvent
 function hoursWorkedOnDate(dateStamp) {
-    let timeInEvents = employeeRecord["timeInEvents"]
-    let timeOutEvents = employeeRecord["timeOutEvents"]
-    for (let i = 0; i < timeInEvents.length; i++) {
-        let dateIn = timeInEvents[i]["date"]
-        if (dateIn === dateStamp) {
-            let hoursWorked = (timeOutEvents[i]["hour"] - timeInEvents[i]["hour"]) / 100
-            return hoursWorked
-        }
+    let timeInEvents = this["timeInEvents"]
+    let dateIn = timeInEvents[0]["date"]
+    if (dateIn === dateStamp) {
+        let hoursWorked = (this.timeOutEvents[0]["hour"] - this.timeInEvents[0]["hour"]) / 100
+        return hoursWorked
     }
 }
 
 function wagesEarnedOnDate(dateStamp) {
-    let wagesEarned = hoursWorkedOnDate(employeeRecord, dateStamp)
-    let payRate = employeeRecord["payPerHour"]
-    return wagesEarned * payRate
+    let hoursWorked = hoursWorkedOnDate.call(this, dateStamp)
+    let payRate = this["payPerHour"]
+    return hoursWorked * payRate
 }
+// wagesEarnedOnDate.call(bpRecord, "2016-04-29")
+// let bpRecord = createEmployeeRecord(["Byron", "Poodle", "Mascot", 3])
+// bpRecord = createTimeInEvent.call(bpRecord, "2016-04-29 1400")
+// bpRecord = createTimeOutEvent.call(bpRecord, "2016-04-29 1700")
+// console.log(bpRecord)
 
 const findEmployeeByFirstName = function () {
 
