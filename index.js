@@ -33,8 +33,6 @@ function createEmployeeRecord(employeeArray) {
 }
 
 function createEmployeeRecords(dataArrays) {
-    ["moe", "sizlak", "barkeep", 2],
-    ["bartholomew", "simpson", "scamp", 3]
     let newArray = []
     for (let i = 0; i < dataArrays.length; i++) {
         let employeeRecord = createEmployeeRecord(dataArrays[i])
@@ -71,10 +69,13 @@ function createTimeOutEvent(dateStamp) {
 // Given an employee record with a date-matched timeInEvent and timeOutEvent
 function hoursWorkedOnDate(dateStamp) {
     let timeInEvents = this["timeInEvents"]
-    let dateIn = timeInEvents[0]["date"]
-    if (dateIn === dateStamp) {
-        let hoursWorked = (this.timeOutEvents[0]["hour"] - this.timeInEvents[0]["hour"]) / 100
-        return hoursWorked
+    let timeOutEvents = this["timeOutEvents"]
+    for (let i = 0; i < timeInEvents.length; i++) {
+        let dateIn = timeInEvents[i]["date"]
+        if (dateIn === dateStamp) {
+            let hoursWorked = (timeOutEvents[i]["hour"] - timeInEvents[i]["hour"]) / 100
+            return hoursWorked
+        }
     }
 }
 
@@ -83,20 +84,18 @@ function wagesEarnedOnDate(dateStamp) {
     let payRate = this["payPerHour"]
     return hoursWorked * payRate
 }
-// wagesEarnedOnDate.call(bpRecord, "2016-04-29")
-// let bpRecord = createEmployeeRecord(["Byron", "Poodle", "Mascot", 3])
-// bpRecord = createTimeInEvent.call(bpRecord, "2016-04-29 1400")
-// bpRecord = createTimeOutEvent.call(bpRecord, "2016-04-29 1700")
-// console.log(bpRecord)
 
-const findEmployeeByFirstName = function () {
-
+function findEmployeeByFirstName(srcArray, firstName) {
+    for (let i = 0; i < srcArray.length; i++) {
+        if (firstName === srcArray[i].firstName) {
+            return srcArray[i]
+        }
+    }
 }
 
 function calculatePayroll(employeeRecord) {
-    let payRoll = []
-    employeeRecord.forEach(e => {
-        payRoll.push(allWagesFor(e))
-    })
-    return payRoll.reduce((pValue, cValue) => pValue + cValue)
+    return employeeRecord.reduce((total, record) => {
+        return total + allWagesFor.call(record)
+    }, 0)
+
 }
